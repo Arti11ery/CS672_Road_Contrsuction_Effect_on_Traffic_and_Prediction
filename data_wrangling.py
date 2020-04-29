@@ -2,8 +2,12 @@ import requests
 import csv
 import json
 import geopy
+from ConfigEnv import Config
 
-API_KEY = ''
+
+config = Config("env/config.json")
+API_KEY = config.get("GOOGLE_API_KEY")
+
 def read_data(filename):
     header = []
     data = []
