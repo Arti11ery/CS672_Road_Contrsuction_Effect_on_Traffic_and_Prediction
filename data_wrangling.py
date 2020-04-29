@@ -3,7 +3,7 @@ import csv
 import json
 import geopy
 
-API_KEY = 'AIzaSyDaIsQTEAUdSGGk1Ia7OuwsUJhEZy6ZhFg'
+API_KEY = ''
 def read_data(filename):
     header = []
     data = []
@@ -40,8 +40,10 @@ for key in traffic_data:
     dict[traffic_location] = dict.get(traffic_location, 0) + 1
 traffic_location = list(dict.keys())
 
-url = 'https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&key='+API_KEY
-r = requests.get(url)
-response_dict=r.json()
-print(response_dict)
+# url = 'https://maps.googleapis.com/maps/api/geocode/json?address='+ traffic_location[0]+'&key='+API_KEY
+# r = requests.get(url)
+# response_dict=r.json()
+response_dict = {'results': [{'address_components': [{'long_name': '3rd Avenue & East 154th Street', 'short_name': '3rd Ave & E 154th St', 'types': ['intersection']}, {'long_name': 'Woodstock', 'short_name': 'Woodstock', 'types': ['neighborhood', 'political']}, {'long_name': 'The Bronx', 'short_name': 'The Bronx', 'types': ['political', 'sublocality', 'sublocality_level_1']}, {'long_name': 'Bronx County', 'short_name': 'Bronx County', 'types': ['administrative_area_level_2', 'political']}, {'long_name': 'New York', 'short_name': 'NY', 'types': ['administrative_area_level_1', 'political']}, {'long_name': 'United States', 'short_name': 'US', 'types': ['country', 'political']}, {'long_name': '10455', 'short_name': '10455', 'types': ['postal_code']}], 'formatted_address': '3rd Ave & E 154th St, The Bronx, NY 10455, USA', 'geometry': {'location': {'lat': 40.818951, 'lng': -73.9140388}, 'location_type': 'GEOMETRIC_CENTER', 'viewport': {'northeast': {'lat': 40.82029998029149, 'lng': -73.9126898197085}, 'southwest': {'lat': 40.8176020197085, 'lng': -73.91538778029151}}}, 'place_id': 'Ei4zcmQgQXZlICYgRSAxNTR0aCBTdCwgVGhlIEJyb254LCBOWSAxMDQ1NSwgVVNBImYiZAoUChIJl12VjMn1wokR2g_fyWtTbJASFAoSCZddlYzJ9cKJEdoP38lrU2yQGhQKEgml9NL9R_TCiRHXPohktnFNuhoUChIJm7Udfcn1wokRzAf0hmBZqloiCg1GelQYFdyc8dM', 'types': ['intersection']}], 'status': 'OK'}
+print(response_dict['results'][0]['formatted_address'])
+print(response_dict['results'][0]['geometry']['location'])
 
