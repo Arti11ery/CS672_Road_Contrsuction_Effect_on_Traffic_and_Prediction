@@ -43,50 +43,44 @@ construction_locations = list(construction_locations.keys())
 traffic = []
 traffic_locations = {}
 for key in traffic_data:
-    FROM = key[2]+'+'+key[3]+',+nyc'  # combine two street to locate the construction location
+    FROM = (key[2]+'+'+key[3]+',+nyc').lower()  # combine two street to locate the construction location
     traffic_locations[FROM] = traffic_locations.get(FROM, 0) + 1
-    TO = key[2]+'+'+key[4]+',+nyc'
+    TO = (key[2]+'+'+key[4]+',+nyc').lower()
     traffic_locations[TO] = traffic_locations.get(FROM, 0) + 1
     traffic.append([FROM,TO,key[6:30]])
 traffic_locations = list(traffic_locations.keys())
 
 
-# TRAFFIC_LOCATIONS = {}
-# for item in traffic_locations:
-#     try:
-#         url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + item[0] + '&key=' +API_KEY
-#         r = requests.get(url)
-#         response_dict=r.json()
-#         if response_dict['status'] == 'OK':
-#             TRAFFIC_LOCATIONS[item] = [response_dict['results'][0]['formatted_address'], response_dict['results'][0]['geometry']['location']['lat'],
-#                      response_dict['results'][0]['geometry']['location']['lng']]
-#         url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + item[1] + '&key=' + API_KEY
-#         r = requests.get(url)
-#         response_dict = r.json()
-#         if response_dict['status'] == 'OK':
-#             TRAFFIC_LOCATIONS[item] = [response_dict['results'][0]['formatted_address'],
-#                    response_dict['results'][0]['geometry']['location']['lat'],
-#                    response_dict['results'][0]['geometry']['location']['lng']]
-#     except IndexError:
-#         pass
-#     continue
-# print('traffic location finished')
-# np.save("data/TRAFFIC_LOCATIONS.npy", TRAFFIC_LOCATIONS)
-
-
-CONSTRUCTION_LOCATIONS = {}
-for item in construction_locations:
+# print(traffic_locations)
+TRAFFIC_LOCATIONS = {}
+for item in traffic_locations:
     try:
-        url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + item + '&key=' + API_KEY
+        url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + item + '&key=' +API_KEY
         r = requests.get(url)
         response_dict=r.json()
         if response_dict['status'] == 'OK':
-            CONSTRUCTION_LOCATIONS[item] = [response_dict['results'][0]['formatted_address'], response_dict['results'][0]['geometry']['location']['lat'],
+            TRAFFIC_LOCATIONS[item] = [response_dict['results'][0]['formatted_address'], response_dict['results'][0]['geometry']['location']['lat'],
                      response_dict['results'][0]['geometry']['location']['lng']]
     except IndexError:
         pass
     continue
-print('construction locations finished')
+print('traffic location finished')
+np.save("data/TRAFFIC_LOCATIONS.npy", TRAFFIC_LOCATIONS)
+
+
+# CONSTRUCTION_LOCATIONS = {}
+# for item in construction_locations:
+#     try:
+#         url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' + item + '&key=' + API_KEY
+#         r = requests.get(url)
+#         response_dict=r.json()
+#         if response_dict['status'] == 'OK':
+#             CONSTRUCTION_LOCATIONS[item] = [response_dict['results'][0]['formatted_address'], response_dict['results'][0]['geometry']['location']['lat'],
+#                      response_dict['results'][0]['geometry']['location']['lng']]
+#     except IndexError:
+#         pass
+#     continue
+# print('construction locations finished')
 
 # construction_header = ['[formatted_address, lat, lng]', 'WORK_START_DATE', 'WORK_END_DATE', 'PURPOSE']
 # traffic_header = ['From[formatted_address, lat, lng]', 'To[formatted_address, lat, lng]', 'Direction', 'Date', '12:00-1:00 AM',
@@ -96,7 +90,7 @@ print('construction locations finished')
 #                   '10:00-11:00PM', '11:00-12:00AM']
 
 
-np.save("CONSTRUCTION_LOCATIONS.npy", CONSTRUCTION_LOCATIONS)
+# np.save("CONSTRUCTION_LOCATIONS.npy", CONSTRUCTION_LOCATIONS)
 
 
 
