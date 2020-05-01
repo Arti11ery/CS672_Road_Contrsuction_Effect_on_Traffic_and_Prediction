@@ -136,17 +136,25 @@ def filter(distance_threshold):
         continue
     np.save('data/FILTER_RESULT.npy', top)
 
+def make_data():
+    construction_filename = 'data/Street_Closures_due_to_construction_activities_by_Intersection.csv'
+    construction_header, construction_data = read_data(construction_filename)
+    traffic_filename = 'data/Traffic_Volume_Counts__2014-2018_.csv'
+    traffic_header, traffic_data = read_data(traffic_filename)
+    for item in construction_data:
+        item[0] = item[1]+'+'+item[2]+',+nyc'
+    for item in traffic_data:
+        item[3] = (item[2] + '+' + item[3] + ',+nyc').lower()
+        item[4] = (item[2] + '+' + item[4] + ',+nyc').lower()
+    np.save('data/CONSTRUCTION_DATA.npy', construction_data)
+    np.save('data/TRAFFIC_DATA.npy', traffic_data)
+
 # get gps data from google map api
 # get_gps_data()
-distance_threshold = 1
-filter(0.5)
-data = np.load('data/FILTER_RESULT.npy', allow_pickle=True).item()
-threshold = 5
-i = 0
-for key, value in data.items():
-    if len(value) > 5:
-        i += 1
-        print(key,":",value)
-print('number of constructions:', i)
+# make_data()
+# distance_threshold = 1
+# filter(distance_threshold)
+
+
 
 
