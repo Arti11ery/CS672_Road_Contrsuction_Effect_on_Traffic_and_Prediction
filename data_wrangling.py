@@ -1,7 +1,7 @@
 import requests
 import csv
 import json
-import geopy
+from geopy.distance import geodesic
 import numpy as np
 
 # 167 dead end
@@ -52,8 +52,6 @@ def get_gps_data():
         traffic.append([FROM,TO,key[6:30]])
     traffic_locations = list(traffic_locations.keys())
 
-
-    print(traffic_locations)
     TRAFFIC_LOCATIONS = {}
     for item in traffic_locations:
         try:
@@ -68,7 +66,6 @@ def get_gps_data():
         continue
     print('traffic location finished')
     np.save("data/TRAFFIC_LOCATIONS.npy", TRAFFIC_LOCATIONS)
-
 
     CONSTRUCTION_LOCATIONS = {}
     for item in construction_locations:
@@ -91,8 +88,65 @@ def get_gps_data():
                       '3:00-4:00PM', '4:00-5:00PM', '5:00-6:00PM','6:00-7:00PM', '7:00-8:00PM', '8:00-9:00PM', '9:00-10:00PM',
                       '10:00-11:00PM', '11:00-12:00AM']
 
-
     np.save("CONSTRUCTION_LOCATIONS.npy", CONSTRUCTION_LOCATIONS)
 
+
+def filter(distance_threshold):
+    construction_filename = 'data/Street_Closures_due_to_construction_activities_by_Intersection.csv'
+    construction_header, construction_data = read_data(construction_filename)
+    traffic_filename = 'data/Traffic_Volume_Counts__2014-2018_.csv'
+    traffic_header, traffic_data = read_data(traffic_filename)
+    constructions = np.load('data/CONSTRUCTION_LOCATIONS.npy', allow_pickle=True).item()
+    traffic = np.load('data/TRAFFIC_LOCATIONS.npy', allow_pickle=True).item()
+
+
+
+    construction_locations = {}
+    for key in construction_data:
+        construction_location = key[1] + '+' + key[
+            2] + ',+nyc'  # combine two street to locate the construction location
+        construction_locations[construction_location] = construction_locations.get(construction_location, 0) + 1
+    construction_locations = list(construction_locations.keys())
+
+    traffic_locations = {}
+    for key in traffic_data:
+        traffic_location = key[2] + '+' + key[3] + ',+nyc'
+        # combine two street to locate the construction location
+        traffic_locations[traffic_location] = key[2] + '+' + key[4] + ',+nyc'
+    traffic_keys = list(traffic_locations.keys())
+    # print(traffic_locations)
+    # print(traffic)
+    top = {}
+    for item in construction_locations:
+        tmp = []
+        try:
+            gps1 = constructions[item][1:3]
+            for key in traffic_keys:
+                FROM = traffic[key.lower()][1:3]
+                TO = traffic[traffic_locations[key].lower()][1:3]
+                MID = [(FROM[0]+TO[0])/2, (FROM[1]+TO[1])/2]
+                dist = geodesic(gps1, MID).km
+                if dist < distance_threshold:
+                    tmp.append([key,dist])
+            break
+        except KeyError:
+            pass
+        if len(tmp) != 0:
+            top[item] = tmp
+        continue
+    np.save('data/FILTER_RESULT.npy', top)
+
+# get gps data from google map api
+# get_gps_data()
+distance_threshold = 1
+filter(0.5)
+data = np.load('data/FILTER_RESULT.npy', allow_pickle=True).item()
+threshold = 5
+i = 0
+for key, value in data.items():
+    if len(value) > 5:
+        i += 1
+        print(key,":",value)
+print('number of constructions:', i)
 
 
