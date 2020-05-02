@@ -7,9 +7,9 @@ import numpy as np
 # 167 dead end
 
 # get the google api key
-with open("env/config.json", 'r') as f:
-    temp = json.loads(f.read())
-API_KEY = temp['GOOGLE']['API_KEY']
+# with open("env/config.json", 'r') as f:
+#     temp = json.loads(f.read())
+# API_KEY = temp['GOOGLE']['API_KEY']
 
 
 
